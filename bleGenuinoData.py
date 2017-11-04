@@ -1,6 +1,5 @@
 import time
 from gattlib import GATTRequester
-import numpy as np
 
 req = GATTRequester("98:4f:ee:10:d4:90")
 
