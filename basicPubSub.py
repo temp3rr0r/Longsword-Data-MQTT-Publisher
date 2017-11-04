@@ -1,4 +1,4 @@
-import time
+import struct
 from gattlib import GATTRequester
 from AWSIoTPythonSDK.MQTTLib import AWSIoTMQTTClient
 import logging
@@ -78,21 +78,26 @@ time.sleep(2)
 # Publish to the same topic in a loop forever
 loopCount = 0
 publishDelay = 1 # seconds
-bleDelay = 0.05
 bufferSize = 1
 
 try:
 	req = GATTRequester("98:4f:ee:10:d4:90") # BLE genuino 101 address
 
 	while True:
-		
 		data = [0] * bufferSize # Init buffer
 	        for i in range(bufferSize):
-        	        data[i] = req.read_by_uuid("3a19") # Read IMU data
+        	        data[i] = req.read_by_uuid("3a19")[0] # Read IMU data
+			
+		dataList = []				
+		for j in range(0, bufferSize):			
+			currentBufferMsg = '{ ax: '+ str(struct.unpack_from('f', data[j], 0)[0]) + ', ay: ' + str(struct.unpack_from('f', data[j], 2)[0]) + ', az: ' + str(struct.unpack_from('f', data[j], 4)[0]) + ', gx: ' + str(struct.unpack_from('f', data[j], 6)[0]) + ', gy: ' + str(struct.unpack_from('f', data[j], 8)[0]) + ', gz: ' + str(struct.unpack_from('f', data[j], 10)[0])  + '}'
+			dataList.append(currentBufferMsg)
 
-		print data
-		msg = 'ax: 0.3, ay: 0.2, az: 0.25, gx: 1, gy: 2, gz: 3';
-		msg = '{' + msg  + '}'
+		#print dataList
+		msg = dataList
+		print msg
+		#msg = '{ loop: ' + '{' + '}' + '}'
+		msg = dataList[0]
 		myAWSIoTMQTTClient.publish(topic, msg, 1)
 		loopCount += 1
 		time.sleep(publishDelay)
