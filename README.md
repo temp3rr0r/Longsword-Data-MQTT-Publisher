@@ -6,6 +6,7 @@ apt-get update -y && apt-get upgrade -y && apt-get dist-upgrade -y
 apt-get install python3
 apt-get install python3-pip
 apt-get install glib-2.0
+apt-get install libbluetooth-dev
 pip3 install AWSIoTPythonSDK
 pip3 install gattlib
 
