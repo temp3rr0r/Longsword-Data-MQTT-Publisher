@@ -73,15 +73,15 @@ myAWSIoTMQTTClient.configureMQTTOperationTimeout(5)  # 5 sec
 
 # Connect and subscribe to AWS IoT
 myAWSIoTMQTTClient.connect()
-myAWSIoTMQTTClient.subscribe(topic, 1, customCallback)
+myAWSIoTMQTTClient.subscribe(topic, 1, customCallback) # TODO: proper AWS topic
 time.sleep(2)
 
 # Publish to the same topic in a loop forever
 loopCount = 0
-publishDelay = 1 # seconds
-bufferSize = 4
-
-class ImuPacket(): pass # Stores imu lines in a list with timestamp
+publishDelay = 1 # seconds TODO: better delay
+bufferSize = 4 # 4 packets x 24 bytes per packet (6 x float32)
+class ImuPacket(): pass # Stores imu packet: timestamp and payload
+class ImuPayload(): pass # Stores imu data
 
 try:
 	req = GATTRequester("98:4f:ee:10:d4:90") # BLE genuino 101 address
@@ -92,16 +92,21 @@ try:
         	        data[i] = req.read_by_uuid("3a19")[0] # Read IMU data
 
 		imuPacketList = []
-		for j in range(0, bufferSize):
+		for j in range(0, bufferSize): # TODO: should i merge this and the previous loop?
+
+	                currentImuPayload = ImuPayload()
+	                currentImuPayload.ax = struct.unpack_from('f', data[j], 0)[0]
+	                currentImuPayload.ay = struct.unpack_from('f', data[j], 2)[0]
+	                currentImuPayload.az = struct.unpack_from('f', data[j], 4)[0]
+	                currentImuPayload.gx = struct.unpack_from('f', data[j], 6)[0]
+	                currentImuPayload.gy = struct.unpack_from('f', data[j], 8)[0]
+        	        currentImuPayload.gz = struct.unpack_from('f', data[j], 10)[0]
+ 
 			currentImuPacket = ImuPacket()
-	                currentImuPacket.ax = struct.unpack_from('f', data[j], 0)[0]
-	                currentImuPacket.ay = struct.unpack_from('f', data[j], 2)[0]
-	                currentImuPacket.az = struct.unpack_from('f', data[j], 4)[0]
-	                currentImuPacket.gx = struct.unpack_from('f', data[j], 6)[0]
-	                currentImuPacket.gy = struct.unpack_from('f', data[j], 8)[0]
-	                currentImuPacket.gz = struct.unpack_from('f', data[j], 10)[0]
-	                currentImuPacket.timestamp = time.time()
-			imuPacketList.append(currentImuPacket)
+                	currentImuPacket.timestamp = time.time()
+	                currentImuPacket.data = currentImuPayload								
+
+        	        imuPacketList.append(currentImuPacket)			
 
 		msg = json.dumps(imuPacketList, default=lambda o: o.__dict__)
 		#print msg

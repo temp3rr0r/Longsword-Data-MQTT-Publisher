@@ -4,10 +4,10 @@ import time
 from gattlib import GATTRequester
 
 req = GATTRequester("98:4f:ee:10:d4:90")
-
 bufferSize = 4
 
 class ImuPacket(): pass
+class ImuPayload(): pass
 
 while True:
 	data = [0] * bufferSize
@@ -20,20 +20,21 @@ while True:
 
 		currentBufferMsg = '{ ax: '+ str(struct.unpack_from('f', data[j], 0)[0]) + ', ay:' + str(struct.unpack_from('f', data[j], 2)[0]) + ', az:' + str(struct.unpack_from('f', data[j], 4)[0]) + ', gx:' + str(struct.unpack_from('f', data[j], 6)[0]) + ', gy:' + str(struct.unpack_from('f', data[j], 8)[0]) + ', gz:' + str(struct.unpack_from('f', data[j], 10)[0])  + '}'
 		
+                currentImuPayload = ImuPayload()
+                currentImuPayload.ax = struct.unpack_from('f', data[j], 0)[0]
+                currentImuPayload.ay = struct.unpack_from('f', data[j], 2)[0]
+                currentImuPayload.az = struct.unpack_from('f', data[j], 4)[0]
+                currentImuPayload.gx = struct.unpack_from('f', data[j], 6)[0]
+                currentImuPayload.gy = struct.unpack_from('f', data[j], 8)[0]
+                currentImuPayload.gz = struct.unpack_from('f', data[j], 10)[0]
+                
 		currentImuPacket = ImuPacket()
-		currentImuPacket.ax = struct.unpack_from('f', data[j], 0)[0]
-                currentImuPacket.ay = struct.unpack_from('f', data[j], 2)[0]
-                currentImuPacket.az = struct.unpack_from('f', data[j], 4)[0]
-                currentImuPacket.gx = struct.unpack_from('f', data[j], 6)[0]
-                currentImuPacket.gy = struct.unpack_from('f', data[j], 8)[0]
-                currentImuPacket.gz = struct.unpack_from('f', data[j], 10)[0]
-		currentImuPacket.timestamp = time.time()
-
-
-		imuPacketList.append(currentImuPacket)
+                currentImuPacket.timestamp = time.time()
+                currentImuPacket.data = currentImuPayload				
+				
+                imuPacketList.append(currentImuPacket)
 
                 dataList.append([0, currentBufferMsg])
-
 
 	dataListStr = json.dumps(dataList) # '[1, 2, [3, 4]]'
 	print dataListStr
