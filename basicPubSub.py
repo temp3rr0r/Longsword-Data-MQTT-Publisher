@@ -87,7 +87,8 @@ try:
 	req = GATTRequester("98:4f:ee:10:d4:90") # BLE genuino 101 address
 
 	while True:
-		data = [0] * bufferSize # Init buffer
+		data = [0] * bufferSize # Init buffer	        
+
 	        for i in range(bufferSize):
         	        data[i] = req.read_by_uuid("3a19")[0] # Read IMU data
 
@@ -95,15 +96,15 @@ try:
 		for j in range(0, bufferSize): # TODO: should i merge this and the previous loop?
 
 	                currentImuPayload = ImuPayload()
-	                currentImuPayload.ax = struct.unpack_from('f', data[j], 0)[0]
-	                currentImuPayload.ay = struct.unpack_from('f', data[j], 2)[0]
-	                currentImuPayload.az = struct.unpack_from('f', data[j], 4)[0]
-	                currentImuPayload.gx = struct.unpack_from('f', data[j], 6)[0]
-	                currentImuPayload.gy = struct.unpack_from('f', data[j], 8)[0]
-        	        currentImuPayload.gz = struct.unpack_from('f', data[j], 10)[0]
+	                currentImuPayload.ax = round(struct.unpack_from('f', data[j], 0)[0], 2)
+	                currentImuPayload.ay = round(struct.unpack_from('f', data[j], 2)[0], 2)
+	                currentImuPayload.az = round(struct.unpack_from('f', data[j], 4)[0], 2)
+	                currentImuPayload.gx = round(struct.unpack_from('f', data[j], 6)[0], 2)
+	                currentImuPayload.gy = round(struct.unpack_from('f', data[j], 8)[0], 2)
+        	        currentImuPayload.gz = round(struct.unpack_from('f', data[j], 10)[0], 2)
  
 			currentImuPacket = ImuPacket()
-                	currentImuPacket.timestamp = time.time()
+                	currentImuPacket.timestamp = round(time.time(), 3)
 	                currentImuPacket.data = currentImuPayload								
 
         	        imuPacketList.append(currentImuPacket)			

@@ -21,12 +21,18 @@ while True:
 		currentBufferMsg = '{ ax: '+ str(struct.unpack_from('f', data[j], 0)[0]) + ', ay:' + str(struct.unpack_from('f', data[j], 2)[0]) + ', az:' + str(struct.unpack_from('f', data[j], 4)[0]) + ', gx:' + str(struct.unpack_from('f', data[j], 6)[0]) + ', gy:' + str(struct.unpack_from('f', data[j], 8)[0]) + ', gz:' + str(struct.unpack_from('f', data[j], 10)[0])  + '}'
 		
                 currentImuPayload = ImuPayload()
-                currentImuPayload.ax = struct.unpack_from('f', data[j], 0)[0]
-                currentImuPayload.ay = struct.unpack_from('f', data[j], 2)[0]
-                currentImuPayload.az = struct.unpack_from('f', data[j], 4)[0]
-                currentImuPayload.gx = struct.unpack_from('f', data[j], 6)[0]
-                currentImuPayload.gy = struct.unpack_from('f', data[j], 8)[0]
-                currentImuPayload.gz = struct.unpack_from('f', data[j], 10)[0]
+                currentImuPayload.ax = round(struct.unpack_from('f', data[j], 10)[0], 2)
+                currentImuPayload.ay = struct.unpack_from('f', data[j], 10)[0]
+
+
+
+
+                currentImuPayload.ax = round(struct.unpack_from('f', data[j], 0)[0], 2)
+                currentImuPayload.ay = round(struct.unpack_from('f', data[j], 2)[0], 2)
+                currentImuPayload.az = round(struct.unpack_from('f', data[j], 4)[0], 2)
+                currentImuPayload.gx = round(struct.unpack_from('f', data[j], 6)[0], 2)
+                currentImuPayload.gy = round(struct.unpack_from('f', data[j], 8)[0], 2)
+                currentImuPayload.gz = round(struct.unpack_from('f', data[j], 10)[0], 2)
                 
 		currentImuPacket = ImuPacket()
                 currentImuPacket.timestamp = time.time()
@@ -51,7 +57,15 @@ while True:
 	classesStr = json.dumps(c, default=lambda o: o.__dict__)
 	print classesStr
 
+	#from json import encoder
+	
+#	json.encoder.FLOAT_REPR = lambda f: ("%.2f" % f)
+#	precision = lambda x: format(x, '.2f')
+
+#	import decimal	
+
 	imuPacketListStr = json.dumps(imuPacketList, default=lambda o: o.__dict__)
+
 	print imuPacketListStr
 
 	time.sleep(1.05)
