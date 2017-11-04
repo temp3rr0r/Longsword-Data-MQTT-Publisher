@@ -79,7 +79,7 @@ time.sleep(2)
 # Publish to the same topic in a loop forever
 loopCount = 0
 publishDelay = 1 # seconds
-bufferSize = 1
+bufferSize = 4
 
 class ImuPacket(): pass # Stores imu lines in a list with timestamp
 
@@ -90,13 +90,9 @@ try:
 		data = [0] * bufferSize # Init buffer
 	        for i in range(bufferSize):
         	        data[i] = req.read_by_uuid("3a19")[0] # Read IMU data
-			
-		dataList = []				
+
 		imuPacketList = []
-		for j in range(0, bufferSize):			
-			currentBufferMsg = '{ ax: '+ str(struct.unpack_from('f', data[j], 0)[0]) + ', ay: ' + str(struct.unpack_from('f', data[j], 2)[0]) + ', az: ' + str(struct.unpack_from('f', data[j], 4)[0]) + ', gx: ' + str(struct.unpack_from('f', data[j], 6)[0]) + ', gy: ' + str(struct.unpack_from('f', data[j], 8)[0]) + ', gz: ' + str(struct.unpack_from('f', data[j], 10)[0])  + '}'
-			dataList.append(currentBufferMsg)
-			
+		for j in range(0, bufferSize):
 			currentImuPacket = ImuPacket()
 	                currentImuPacket.ax = struct.unpack_from('f', data[j], 0)[0]
 	                currentImuPacket.ay = struct.unpack_from('f', data[j], 2)[0]
@@ -107,20 +103,13 @@ try:
 	                currentImuPacket.timestamp = time.time()
 			imuPacketList.append(currentImuPacket)
 
-
-		#print dataList
-		msg = dataList
-		print msg
-		#msg = '{ loop: ' + '{' + '}' + '}'
-		msg = dataList[0]
-
-
-		imuPacketListStr = json.dumps(imuPacketList, default=lambda o: o.__dict__)
-		print imuPacketListStr
+		msg = json.dumps(imuPacketList, default=lambda o: o.__dict__)
+		#print msg
 
 		myAWSIoTMQTTClient.publish(topic, msg, 1)
 		loopCount += 1
 		time.sleep(publishDelay)
+
 except KeyboardInterrupt:
 	pass
 
