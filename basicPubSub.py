@@ -47,7 +47,7 @@ if not args.useWebsocket and (not args.certificatePath or not args.privateKeyPat
 
 # Configure logging
 logger = logging.getLogger("AWSIoTPythonSDK.core")
-logger.setLevel(logging.DEBUG)
+logger.setLevel(logging.ERROR)
 streamHandler = logging.StreamHandler()
 formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 streamHandler.setFormatter(formatter)
@@ -78,45 +78,49 @@ time.sleep(2)
 
 # Publish to the same topic in a loop forever
 loopCount = 0
-publishDelay = 1 # seconds TODO: better delay
+publishDelay = 0.010 # seconds TODO: better delay
 bufferSize = 1 # 4 packets x 24 bytes per packet (6 x float32)
 class ImuPacket(): pass # Stores imu packet: timestamp and payload
 class ImuPayload(): pass # Stores imu data
 
-try:
-	req = GATTRequester("98:4f:ee:10:d4:90") # BLE genuino 101 address
+while True:
+	try:
+		req = GATTRequester("98:4f:ee:10:d4:90") # BLE genuino 101 address
 
-	while True:
-		data = [0] * bufferSize # Init buffer	        
+		while True:
+			data = [0] * bufferSize # Init buffer	        
 
-	        for i in range(bufferSize):
-        	        data[i] = req.read_by_uuid("3a19")[0] # Read IMU data
+	        	for i in range(bufferSize):
+	        	        data[i] = req.read_by_uuid("3a19")[0] # Read IMU data
 
-		imuPacketList = []
-		for j in range(0, bufferSize): # TODO: should i merge this and the previous loop?
+			imuPacketList = []
+			for j in range(0, bufferSize): # TODO: should i merge this and the previous loop?
 
-	                currentImuPayload = ImuPayload()
-	                currentImuPayload.ax = round(struct.unpack_from('f', data[j], 0)[0], 2)
-	                currentImuPayload.ay = round(struct.unpack_from('f', data[j], 2)[0], 2)
-	                currentImuPayload.az = round(struct.unpack_from('f', data[j], 4)[0], 2)
-	                currentImuPayload.gx = round(struct.unpack_from('f', data[j], 6)[0], 2)
-	                currentImuPayload.gy = round(struct.unpack_from('f', data[j], 8)[0], 2)
-        	        currentImuPayload.gz = round(struct.unpack_from('f', data[j], 10)[0], 2)
+		                currentImuPayload = ImuPayload()
+	        	        currentImuPayload.ax = round(struct.unpack_from('f', data[j], 0)[0], 2)
+		                currentImuPayload.ay = round(struct.unpack_from('f', data[j], 2)[0], 2)
+		                currentImuPayload.az = round(struct.unpack_from('f', data[j], 4)[0], 2)
+		                currentImuPayload.gx = round(struct.unpack_from('f', data[j], 6)[0], 2)
+		                currentImuPayload.gy = round(struct.unpack_from('f', data[j], 8)[0], 2)
+	        	        currentImuPayload.gz = round(struct.unpack_from('f', data[j], 10)[0], 2)
+				currentImuPayload.classification = -1			
  
-			currentImuPacket = ImuPacket()
-                	currentImuPacket.timestamp = round(time.time(), 3)
-	                currentImuPacket.data = currentImuPayload								
+				currentImuPacket = ImuPacket()
+	                	currentImuPacket.timestamp = round(time.time(), 3)
+		                currentImuPacket.data = currentImuPayload								
 
-        	        imuPacketList.append(currentImuPacket)			
+        		        imuPacketList.append(currentImuPacket)			
+	
+			msg = json.dumps(imuPacketList[0], default=lambda o: o.__dict__)			
+			#print msg
+			myAWSIoTMQTTClient.publish(topic, msg, 1)
+			loopCount += 1
+			time.sleep(publishDelay)
 
-		msg = json.dumps(imuPacketList[0], default=lambda o: o.__dict__)
-
-		myAWSIoTMQTTClient.publish(topic, msg, 1)
-		loopCount += 1
-		time.sleep(publishDelay)
-
-except KeyboardInterrupt:
-	pass
+	except:
+		print "Exception. Retrying.."
+		time.sleep(2)
+		#pass
 
 print('Exiting the loop');
 myAWSIoTMQTTClient.disconnect()
