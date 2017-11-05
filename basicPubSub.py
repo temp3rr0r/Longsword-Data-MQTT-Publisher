@@ -73,13 +73,13 @@ myAWSIoTMQTTClient.configureMQTTOperationTimeout(5)  # 5 sec
 
 # Connect and subscribe to AWS IoT
 myAWSIoTMQTTClient.connect()
-#myAWSIoTMQTTClient.subscribe(topic, 1, customCallback) # TODO: proper AWS topic
+#myAWSIoTMQTTClient.subscribe(topic, 1, customCallback)
 time.sleep(2)
 
 # Publish to the same topic in a loop forever
 loopCount = 0
 publishDelay = 1 # seconds TODO: better delay
-bufferSize = 4 # 4 packets x 24 bytes per packet (6 x float32)
+bufferSize = 1 # 4 packets x 24 bytes per packet (6 x float32)
 class ImuPacket(): pass # Stores imu packet: timestamp and payload
 class ImuPayload(): pass # Stores imu data
 
@@ -109,8 +109,7 @@ try:
 
         	        imuPacketList.append(currentImuPacket)			
 
-		msg = json.dumps(imuPacketList, default=lambda o: o.__dict__)
-		#print msg
+		msg = json.dumps(imuPacketList[0], default=lambda o: o.__dict__)
 
 		myAWSIoTMQTTClient.publish(topic, msg, 1)
 		loopCount += 1
