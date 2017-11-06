@@ -73,12 +73,12 @@ myAWSIoTMQTTClient.configureMQTTOperationTimeout(5)  # 5 sec
 
 # Connect and subscribe to AWS IoT
 myAWSIoTMQTTClient.connect()
-#myAWSIoTMQTTClient.subscribe(topic, 1, customCallback)
+myAWSIoTMQTTClient.subscribe(topic, 1, customCallback)
 time.sleep(2)
 
 # Publish to the same topic in a loop forever
 loopCount = 0
-publishDelay = 0.010 # seconds TODO: better delay
+publishDelay = 1.010 # seconds TODO: better delay
 bufferSize = 1 # 4 packets x 24 bytes per packet (6 x float32)
 class ImuPacket(): pass # Stores imu packet: timestamp and payload
 class ImuPayload(): pass # Stores imu data
@@ -88,21 +88,24 @@ while True:
 		req = GATTRequester("98:4f:ee:10:d4:90") # BLE genuino 101 address
 
 		while True:
-			data = [0] * bufferSize # Init buffer	        
+			#data = [0] * bufferSize # Init buffer	        
+			data = [[] for i in range(24)] 
+			data2 = [[] for i in range(24)]
 
 	        	for i in range(bufferSize):
 	        	        data[i] = req.read_by_uuid("3a19")[0] # Read IMU data
+				data2[i] = req.read_by_uuid("3a20")[0]
 
 			imuPacketList = []
 			for j in range(0, bufferSize): # TODO: should i merge this and the previous loop?
 
 		                currentImuPayload = ImuPayload()
-	        	        currentImuPayload.ax = round(struct.unpack_from('f', data[j], 0)[0], 2)
-		                currentImuPayload.ay = round(struct.unpack_from('f', data[j], 2)[0], 2)
-		                currentImuPayload.az = round(struct.unpack_from('f', data[j], 4)[0], 2)
-		                currentImuPayload.gx = round(struct.unpack_from('f', data[j], 6)[0], 2)
-		                currentImuPayload.gy = round(struct.unpack_from('f', data[j], 8)[0], 2)
-	        	        currentImuPayload.gz = round(struct.unpack_from('f', data[j], 10)[0], 2)
+	        	        currentImuPayload.ax = struct.unpack_from('i', data[j], 0)[0]
+		                currentImuPayload.ay = struct.unpack_from('i', data[j], 4)[0]
+		                currentImuPayload.az = struct.unpack_from('i', data[j], 8)[0]
+		                currentImuPayload.gx = struct.unpack_from('i', data2[j], 0)[0]
+		                currentImuPayload.gy = struct.unpack_from('i', data2[j], 4)[0]
+	        	        currentImuPayload.gz = struct.unpack_from('i', data2[j], 8)[0]
 				currentImuPayload.classification = -1			
  
 				currentImuPacket = ImuPacket()
