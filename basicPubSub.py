@@ -87,13 +87,12 @@ while True:
 	try:
 		req = GATTRequester("98:4f:ee:10:d4:90") # BLE genuino 101 address
 
-		while True:
-			#data = [0] * bufferSize # Init buffer	        
-			data = [[] for i in range(24)] 
-			data2 = [[] for i in range(24)]
+		while True:			
+			data = [[] for i in range(20)] # Accelerometer buffer
+			data2 = [[] for i in range(20)] # Magnetometer buffer
 
-	        	for i in range(bufferSize):
-	        	        data[i] = req.read_by_uuid("3a19")[0] # Read IMU data
+	        	for i in range(bufferSize): # Read IMU data
+	        	        data[i] = req.read_by_uuid("3a19")[0]
 				data2[i] = req.read_by_uuid("3a20")[0]
 
 			imuPacketList = []
@@ -103,6 +102,7 @@ while True:
 	        	        currentImuPayload.ax = struct.unpack_from('i', data[j], 0)[0]
 		                currentImuPayload.ay = struct.unpack_from('i', data[j], 4)[0]
 		                currentImuPayload.az = struct.unpack_from('i', data[j], 8)[0]
+
 		                currentImuPayload.gx = struct.unpack_from('i', data2[j], 0)[0]
 		                currentImuPayload.gy = struct.unpack_from('i', data2[j], 4)[0]
 	        	        currentImuPayload.gz = struct.unpack_from('i', data2[j], 8)[0]
