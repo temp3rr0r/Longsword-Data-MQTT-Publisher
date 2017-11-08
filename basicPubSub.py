@@ -79,7 +79,7 @@ time.sleep(2)
 
 # Publish to the same topic in a loop forever
 loopCount = 0
-publishDelay = 0.010 # seconds TODO: better delay
+publishDelay = 1.010 # seconds TODO: better delay
 bufferSize = 1 # 4 packets x 20 bytes per packet MAX (5 x int32)
 class ImuPacket(): pass # Stores imu packet: timestamp and payload
 class ImuPayload(): pass # Stores imu data
@@ -115,14 +115,14 @@ while True:
 		                currentImuPacket.data = currentImuPayload
         		        imuPacketList.append(currentImuPacket)
 
-				with open('longsword.csv', 'a') as csvfile:
-				        csvWriter = csv.writer(csvfile, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+				#with open('longsword.csv', 'a') as csvfile:
+				#        csvWriter = csv.writer(csvfile, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
 				        #csvWriter.writerow(['classification','ax', 'ay', 'az', 'gx', 'gy', 'gz'])
-					csvWriter.writerow([currentImuPayload.classification, currentImuPayload.ax, currentImuPayload.ay, currentImuPayload.az, currentImuPayload.gx, currentImuPayload.gy, currentImuPayload.gz])
+				#	csvWriter.writerow([currentImuPayload.classification, currentImuPayload.ax, currentImuPayload.ay, currentImuPayload.az, currentImuPayload.gx, currentImuPayload.gy, currentImuPayload.gz])
 
-			#msg = json.dumps(imuPacketList[0], default=lambda o: o.__dict__)
-			#print msg
-			#myAWSIoTMQTTClient.publish(topic, msg, 1) # Publish to DynamoDB via IoT
+			msg = json.dumps(imuPacketList[0], default=lambda o: o.__dict__)
+			print msg
+			myAWSIoTMQTTClient.publish(topic, msg, 1) # Publish to DynamoDB via IoT
 			loopCount += 1
 			time.sleep(publishDelay)
 
