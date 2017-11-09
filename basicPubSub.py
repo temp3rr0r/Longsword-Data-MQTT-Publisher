@@ -74,12 +74,12 @@ myAWSIoTMQTTClient.configureMQTTOperationTimeout(5)  # 5 sec
 
 # Connect and subscribe to AWS IoT
 myAWSIoTMQTTClient.connect()
-myAWSIoTMQTTClient.subscribe(topic, 1, customCallback)
+#myAWSIoTMQTTClient.subscribe(topic, 1, customCallback)
 time.sleep(2)
 
 # Publish to the same topic in a loop forever
 loopCount = 0
-publishDelay = 1.010 # seconds TODO: better delay
+publishDelay = 0.010 # seconds TODO: better delay
 bufferSize = 1 # 4 packets x 20 bytes per packet MAX (5 x int32)
 class ImuPacket(): pass # Stores imu packet: timestamp and payload
 class ImuPayload(): pass # Stores imu data
@@ -121,7 +121,7 @@ while True:
 				#	csvWriter.writerow([currentImuPayload.classification, currentImuPayload.ax, currentImuPayload.ay, currentImuPayload.az, currentImuPayload.gx, currentImuPayload.gy, currentImuPayload.gz])
 
 			msg = json.dumps(imuPacketList[0], default=lambda o: o.__dict__)
-			print msg
+			#print msg
 			myAWSIoTMQTTClient.publish(topic, msg, 1) # Publish to DynamoDB via IoT
 			loopCount += 1
 			time.sleep(publishDelay)
