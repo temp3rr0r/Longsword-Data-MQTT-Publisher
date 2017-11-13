@@ -75,11 +75,13 @@ myAWSIoTMQTTClient.configureMQTTOperationTimeout(5)  # 5 sec
 # Connect and subscribe to AWS IoT
 myAWSIoTMQTTClient.connect()
 #myAWSIoTMQTTClient.subscribe(topic, 1, customCallback)
+print("Accepting BLE data in 2 seconds...")
 time.sleep(2)
+print("Started!")
 
 # Publish to the same topic in a loop forever
 loopCount = 0
-publishDelay = 0.010 # seconds TODO: better delay
+publishDelay = 0.040 # seconds TODO: better delay
 bufferSize = 1 # 4 packets x 20 bytes per packet MAX (5 x int32)
 class ImuPacket(): pass # Stores imu packet: timestamp and payload
 class ImuPayload(): pass # Stores imu data
