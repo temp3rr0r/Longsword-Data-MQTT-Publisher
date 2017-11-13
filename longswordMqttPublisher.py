@@ -74,7 +74,7 @@ myAWSIoTMQTTClient.configureMQTTOperationTimeout(5)  # 5 sec
 
 # Connect and subscribe to AWS IoT
 myAWSIoTMQTTClient.connect()
-#myAWSIoTMQTTClient.subscribe(topic, 1, customCallback)
+myAWSIoTMQTTClient.subscribe(topic, 1, customCallback)
 print("Accepting BLE data in 2 seconds...")
 time.sleep(2)
 print("Started!")
@@ -91,12 +91,20 @@ while True:
 		req = GATTRequester("98:4f:ee:10:d4:90") # BLE genuino 101 address
 
 		while True:			
-			data = [[] for i in range(20)] # Accelerometer buffer
-			data2 = [[] for i in range(20)] # Magnetometer buffer
+			data = [[] for i in range(20)] # Accel
+			data2 = [[] for i in range(20)] # Gyro
+			data3 = [[] for i in range(20)] # Steps, temp
+			data4 = [[] for i in range(20)] # Accel2
+			data5 = [[] for i in range(20)] # Gyro2
+			data6 = [[] for i in range(20)] # Magnetometer
 
 	        	for i in range(bufferSize): # Read IMU data
 	        	        data[i] = req.read_by_uuid("3a19")[0]
 				data2[i] = req.read_by_uuid("3a20")[0]
+				data3[i] = req.read_by_uuid("3a21")[0]
+				data4[i] = req.read_by_uuid("3a22")[0]
+				data5[i] = req.read_by_uuid("3a23")[0]
+				data6[i] = req.read_by_uuid("3a24")[0]
 
 			imuPacketList = []
 			for j in range(0, bufferSize): # TODO: should i merge this and the previous loop?
@@ -110,7 +118,22 @@ while True:
 		                currentImuPayload.gy = struct.unpack_from('i', data2[j], 4)[0]
 	        	        currentImuPayload.gz = struct.unpack_from('i', data2[j], 8)[0]
 
-				currentImuPayload.classification = 3 # Current gesture class
+				currentImuPayload.steps = struct.unpack_from('i', data3[j], 0)[0]
+				currentImuPayload.temp = struct.unpack_from('i', data3[j], 4)[0]
+
+                                currentImuPayload.ax2 = struct.unpack_from('i', data4[j], 0)[0]
+                                currentImuPayload.ay2 = struct.unpack_from('i', data4[j], 4)[0]
+                                currentImuPayload.az2 = struct.unpack_from('i', data4[j], 8)[0]
+
+                                currentImuPayload.gx2 = struct.unpack_from('i', data5[j], 0)[0]
+				currentImuPayload.gy2 = struct.unpack_from('i', data5[j], 4)[0]
+				currentImuPayload.gz2 = struct.unpack_from('i', data5[j], 8)[0]
+
+				currentImuPayload.mx = struct.unpack_from('i', data6[j], 0)[0]
+				currentImuPayload.my = struct.unpack_from('i', data6[j], 4)[0]
+				currentImuPayload.mz = struct.unpack_from('i', data6[j], 8)[0]
+
+				currentImuPayload.classification = 3 # Current gesture class #TODO: vui change
 
 				currentImuPacket = ImuPacket()
 	                	currentImuPacket.timestamp = round(time.time(), 3)
@@ -128,8 +151,8 @@ while True:
 			loopCount += 1
 			time.sleep(publishDelay)
 
-	except:
-		print "Exception. Retrying.."
+	except Exception, e:
+		print "Exception. Retrying... " + str(e)
 		time.sleep(2)
 		#pass
 
