@@ -74,7 +74,7 @@ myAWSIoTMQTTClient.configureMQTTOperationTimeout(5)  # 5 sec
 
 # Connect and subscribe to AWS IoT
 myAWSIoTMQTTClient.connect()
-myAWSIoTMQTTClient.subscribe(topic, 1, customCallback)
+#myAWSIoTMQTTClient.subscribe(topic, 1, customCallback)
 print("Accepting BLE data in 2 seconds...")
 time.sleep(2)
 print("Started!")
