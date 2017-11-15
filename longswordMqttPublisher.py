@@ -23,6 +23,8 @@ def customCallback(client, userdata, message):
 
 # Plays text-to speech sound
 def playTextToSpeech(ssmlText):
+	if os.path.exists('ssmlSpokenText.mp3'):
+		os.remove('ssmlSpokenText.mp3') # Delete mp3 disk file buffer if exists
 	ssmlSpokenText = polly.synthesize_speech(Text = ssmlText, OutputFormat='mp3', VoiceId = 'Brian', TextType='ssml')
 	with open('ssmlSpokenText.mp3', 'wb') as f:
 	        f.write(ssmlSpokenText['AudioStream'].read())
@@ -102,8 +104,8 @@ longswordMovements[1] =  "<speak><lang xml:lang=\"de-DE\">Ochs.</lang></speak>"
 longswordMovements[2] =  "<speak><lang xml:lang=\"de-DE\">Pflug.</lang></speak>"
 longswordMovements[3] =  "<speak><lang xml:lang=\"de-DE\">Alber.</lang></speak>"
 longswordMovements[4] =  "<speak>Strikes: <lang xml:lang=\"de-DE\">Mittelhaw.</lang></speak>"
-longswordMovements[5] =  "<speak><lang xml:lang=\"de-DE\">Underhaw.</lang></speak>"
-longswordMovements[6] =  "<speak><lang xml:lang=\"de-DE\">Oberhaw.</lang></speak>"
+longswordMovements[5] =  "<speak><lang xml:lang=\"de-DE\">Oberhaw.</lang></speak>"
+longswordMovements[6] =  "<speak><lang xml:lang=\"de-DE\">Zwerhaw.</lang></speak>"
 
 # Connect and subscribe to AWS IoT
 myAWSIoTMQTTClient.connect()
@@ -114,7 +116,7 @@ print("Started!")
 
 # Publish to the same topic in a loop forever
 loopCount = 0
-publishDelay = 1.040 # seconds TODO: better delay
+publishDelay = 0.540 # seconds
 afterSpeechDelay = 0.1 # second
 dataPointsPerMovement = 5
 
@@ -153,7 +155,7 @@ while trainingLive == True:
 					data6[i] = req.read_by_uuid("3a24")[0]
 
 				imuPacketList = []
-				for j in range(0, bufferSize): # TODO: should i merge this and the previous loop?
+				for j in range(0, bufferSize):
 
 			                currentImuPayload = ImuPayload()
 		        	        currentImuPayload.ax = struct.unpack_from('i', data[j], 0)[0]
@@ -202,7 +204,9 @@ while trainingLive == True:
 		time.sleep(2)
 		#pass
 
+	trainingLive = False
 
+# TODO: get score from stateful RESTful service
 # Play outro speech
 outroSsmlText = "<speak>Session complete! Your score is: 62%. Now, I can use your data to also become better at grading. Thank you for using longsword training.</speak>"
 playTextToSpeech(outroSsmlText)
