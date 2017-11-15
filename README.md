@@ -1,5 +1,13 @@
 # LongswordStances
 
+## Technologies
+- Text-to-speech (AWS Polly)
+- Internet Of Things (AWS IoT)
+- Inertial Measurement Unit (IMU)
+- Speech Synthesis Markup Language (SSML)
+- Publisher-Subscriber pattern
+- Bluetooth Low Energy (BLE)
+
 ## SDKs & Libraries
 
 - csv, json
@@ -7,14 +15,6 @@
 - Pygame Mixer (Audio playback)
 - gattlib (BLE data transfer)
 - AWS Iot MQTT Python SDK
-
-## Technologies
-- Text-to-speech (AWS Polly)
-- Internet Of Things (AWS IoT)
-- Inertial Measurement Unit (IMU)
-- Speech Synthesis Markup Language (SSML)
-- Publisher-Subscriber patter
-- Bluetooth Low Energy (BLE)
 
 ## Installation
 
