@@ -11,10 +11,10 @@ import boto3
 import math
 from pygame import mixer
 
-verbose = False
+verbose = True
 speech = True
-iot = False
-csvLog = True
+iot = True
+csvLog = False
 
 # Custom MQTT message callback
 def customCallback(client, userdata, message):
@@ -124,7 +124,7 @@ print("Started!")
 loopCount = 0
 publishDelay = 0.015 # seconds
 afterSpeechDelay = 0.010 # second
-dataPointsPerMovement = 20
+dataPointsPerMovement = 4
 dataPointsPerMovementIteration = 4
 
 bufferSize = 1 # 4 packets x 20 bytes per packet MAX (5 x int32)
