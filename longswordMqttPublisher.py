@@ -10,9 +10,10 @@ import os
 import boto3
 from pygame import mixer
 
-verbose = True
-speech = False
+verbose = False
+speech = True
 iot = False
+csvLog = True
 
 # Custom MQTT message callback
 def customCallback(client, userdata, message):
@@ -122,7 +123,7 @@ print("Started!")
 loopCount = 0
 publishDelay = 0.015 # seconds
 afterSpeechDelay = 0.1 # second
-dataPointsPerMovement = 5
+dataPointsPerMovement = 20
 
 bufferSize = 1 # 4 packets x 20 bytes per packet MAX (5 x int32)
 class ImuPacket(): pass # Stores imu packet: timestamp and payload
@@ -195,10 +196,18 @@ while trainingLive == True:
 			                currentImuPacket.data = currentImuPayload
         			        imuPacketList.append(currentImuPacket)
 
-					#with open('longsword.csv', 'a') as csvfile:
-					#        csvWriter = csv.writer(csvfile, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
-					        #csvWriter.writerow(['classification','ax', 'ay', 'az', 'gx', 'gy', 'gz'])
-					#	csvWriter.writerow([currentImuPayload.classification, currentImuPayload.ax, currentImuPayload.ay, currentImuPayload.az, currentImuPayload.gx, currentImuPayload.gy, currentImuPayload.gz])
+                                        if csvLog == True:
+                                                with open('longsword.csv', 'a') as csvfile:
+							csvWriter = csv.writer(csvfile, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+							#csvWriter.writerow(['classification','ax','ay','az','gx','gy','gz','ax2','ay2','az2','gx2','gy2','gz2','mx','my','mz','steps','temp'])
+							csvWriter.writerow([currentImuPayload.classification, 
+							currentImuPayload.ax, currentImuPayload.ay, currentImuPayload.az, \
+							currentImuPayload.gx, currentImuPayload.gy, currentImuPayload.gz, \
+							currentImuPayload.ax2, currentImuPayload.ay2, currentImuPayload.az2, \
+							currentImuPayload.gx2, currentImuPayload.gy2, currentImuPayload.gz2, \
+							currentImuPayload.mx, currentImuPayload.my, currentImuPayload.mz, \
+							currentImuPayload.steps, currentImuPayload.temp])
+
 
 				msg = json.dumps(imuPacketList[0], default=lambda o: o.__dict__)
 				if verbose == True:
