@@ -1,5 +1,23 @@
 # LongswordStances
 
+ The main IoT app. It runs on Nvidia Jetson TX2(embedded super-computer). Connects with sensors via BLE and publishes all the real-time IMU data to the AWS IoT stream via MQTT. It also interacts with the user via AWS Polly text-to-speech.
+
+## Technologies
+- Text-to-speech (AWS Polly)
+- Internet Of Things (AWS IoT)
+- Inertial Measurement Unit (IMU)
+- Speech Synthesis Markup Language (SSML)
+- Publisher-Subscriber pattern
+- Bluetooth Low Energy (BLE)
+
+## SDKs & Libraries
+
+- csv, json
+- boto3 (AWS)
+- Pygame Mixer (Audio playback)
+- gattlib (BLE data transfer)
+- AWS Iot MQTT Python SDK
+
 ## Installation
 
 Packages:
