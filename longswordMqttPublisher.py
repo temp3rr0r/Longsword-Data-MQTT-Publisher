@@ -10,10 +10,10 @@ import os
 import boto3
 from pygame import mixer
 
-verbose = False
+verbose = True
 speech = True
 iot = False
-csvLog = True
+csvLog = False
 
 # Custom MQTT message callback
 def customCallback(client, userdata, message):
@@ -157,18 +157,19 @@ while trainingLive == True:
 				data2 = [[] for i in range(20)] # Gyro
 				data3 = [[] for i in range(20)] # Steps, temp
 				data4 = [[] for i in range(20)] # Accel2
-				data5 = [[] for i in range(20)] # Gyro2
-				data6 = [[] for i in range(20)] # Magnetometer
+				#data5 = [[] for i in range(20)] # Gyro2
+				#data6 = [[] for i in range(20)] # Magnetometer
 
 		        	for i in range(bufferSize): # Read IMU data # TODO in between delay
 	        		        data[i] = req.read_by_uuid("3a19")[0]
 					data2[i] = req.read_by_uuid("3a20")[0]
+					#time.sleep(publishDelay)
 					data3[i] = req.read_by_uuid("3a21")[0]
-					#time.sleep(publishDelay)
 					data4[i] = req.read_by_uuid("3a22")[0]
-					data5[i] = req.read_by_uuid("3a23")[0]
-					data6[i] = req.read_by_uuid("3a24")[0]
+					#data5[i] = req.read_by_uuid("3a23")[0]
+					#data6[i] = req.read_by_uuid("3a24")[0]
 					#time.sleep(publishDelay)
+					#print("data4[i] length: ", len(data4[0]))
 
 				imuPacketList = []
 				for j in range(0, bufferSize):
@@ -178,24 +179,24 @@ while trainingLive == True:
 			                currentImuPayload.ay = struct.unpack_from('i', data[j], 4)[0]
 		        	        currentImuPayload.az = struct.unpack_from('i', data[j], 8)[0]
 
-			                currentImuPayload.gx = struct.unpack_from('i', data2[j], 0)[0]
-			                currentImuPayload.gy = struct.unpack_from('i', data2[j], 4)[0]
-	        		        currentImuPayload.gz = struct.unpack_from('i', data2[j], 8)[0]
+			                currentImuPayload.gx = struct.unpack_from('i', data[j], 12)[0]
+			                currentImuPayload.gy = struct.unpack_from('i', data2[j], 0)[0]
+	        		        currentImuPayload.gz = struct.unpack_from('i', data2[j], 4)[0]
 
-					currentImuPayload.steps = struct.unpack_from('i', data3[j], 0)[0]
-					currentImuPayload.temp = struct.unpack_from('i', data3[j], 4)[0]
+	                                currentImuPayload.ax2 = struct.unpack_from('i', data2[j], 8)[0]
+        	                        currentImuPayload.ay2 = struct.unpack_from('i', data2[j], 12)[0]
+                	                currentImuPayload.az2 = struct.unpack_from('i', data3[j], 0)[0]
 
-	                                currentImuPayload.ax2 = struct.unpack_from('i', data4[j], 0)[0]
-        	                        currentImuPayload.ay2 = struct.unpack_from('i', data4[j], 4)[0]
-                	                currentImuPayload.az2 = struct.unpack_from('i', data4[j], 8)[0]
+	                                currentImuPayload.gx2 = struct.unpack_from('i', data3[j], 4)[0]
+					currentImuPayload.gy2 = struct.unpack_from('i', data3[j], 8)[0]
+					currentImuPayload.gz2 = struct.unpack_from('i', data3[j], 12)[0]
 
-	                                currentImuPayload.gx2 = struct.unpack_from('i', data5[j], 0)[0]
-					currentImuPayload.gy2 = struct.unpack_from('i', data5[j], 4)[0]
-					currentImuPayload.gz2 = struct.unpack_from('i', data5[j], 8)[0]
+					currentImuPayload.mx = struct.unpack_from('i', data4[j], 0)[0]
+					currentImuPayload.my = struct.unpack_from('i', data4[j], 4)[0]
+					currentImuPayload.mz = struct.unpack_from('i', data4[j], 8)[0]
 
-					currentImuPayload.mx = struct.unpack_from('i', data6[j], 0)[0]
-					currentImuPayload.my = struct.unpack_from('i', data6[j], 4)[0]
-					currentImuPayload.mz = struct.unpack_from('i', data6[j], 8)[0]
+					currentImuPayload.steps = struct.unpack_from('i', data4[j], 12)[0]
+					currentImuPayload.temp = struct.unpack_from('i', data4[j], 12)[0]
 
 					currentImuPayload.classification = classIndex # Current gesture class #TODO: vui change
 
