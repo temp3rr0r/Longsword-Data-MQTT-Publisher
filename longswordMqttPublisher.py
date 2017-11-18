@@ -124,6 +124,7 @@ loopCount = 0
 publishDelay = 0.015 # seconds
 afterSpeechDelay = 0.1 # second
 dataPointsPerMovement = 20
+dataPointsPerMovementIteration = 4
 
 bufferSize = 1 # 4 packets x 20 bytes per packet MAX (5 x int32)
 class ImuPacket(): pass # Stores imu packet: timestamp and payload
@@ -145,6 +146,13 @@ while trainingLive == True:
 			time.sleep(afterSpeechDelay)
 	
 			for dataPoints in range(dataPointsPerMovement): # get  data points
+
+				if (dataPoints % dataPointsPerMovementIteration == 0 or dataPoints == 0) and classIndex > 3:
+					if speech == True:
+
+						playTextToSpeech(str("<speak>Get ready!</speak>"))
+						time.sleep(afterSpeechDelay)
+						playTextToSpeech(str("<speak>" + str((dataPoints / dataPointsPerMovementIteration) + 1) + "</speak>"))				
 				data = [[] for i in range(20)] # Accel
 				data2 = [[] for i in range(20)] # Gyro
 				data3 = [[] for i in range(20)] # Steps, temp
