@@ -107,7 +107,7 @@ longswordMovements = [""] * 7
 longswordMovements[0] =  "<speak>Guards: <lang xml:lang=\"de-DE\">Vom tag.</lang></speak>"
 longswordMovements[1] =  "<speak><lang xml:lang=\"de-DE\">Ochs.</lang></speak>"
 longswordMovements[2] =  "<speak><lang xml:lang=\"de-DE\">Pflug.</lang></speak>"
-longswordMovements[3] =  "<speak><lang xml:lang=\"de-DE\">Alber.</lang></speak>"
+longswordMovements[3] =  "<speak><lang xml:lang=\"de-DE\">Wechsel.</lang></speak>"
 longswordMovements[4] =  "<speak>Strikes: <lang xml:lang=\"de-DE\">Mittelhaw.</lang></speak>"
 longswordMovements[5] =  "<speak><lang xml:lang=\"de-DE\">Oberhaw.</lang></speak>"
 longswordMovements[6] =  "<speak><lang xml:lang=\"de-DE\">Zwerhaw.</lang></speak>"
