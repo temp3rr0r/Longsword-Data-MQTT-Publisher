@@ -123,7 +123,7 @@ print("Started!")
 # Publish to the same topic in a loop forever
 loopCount = 0
 publishDelay = 0.015 # seconds
-afterSpeechDelay = 0.1 # second
+afterSpeechDelay = 0.010 # second
 dataPointsPerMovement = 20
 dataPointsPerMovementIteration = 4
 
