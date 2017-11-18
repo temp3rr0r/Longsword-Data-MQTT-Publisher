@@ -164,11 +164,11 @@ while trainingLive == True:
 	        		        data[i] = req.read_by_uuid("3a19")[0]
 					data2[i] = req.read_by_uuid("3a20")[0]
 					data3[i] = req.read_by_uuid("3a21")[0]
-					time.sleep(publishDelay)
+					#time.sleep(publishDelay)
 					data4[i] = req.read_by_uuid("3a22")[0]
 					data5[i] = req.read_by_uuid("3a23")[0]
 					data6[i] = req.read_by_uuid("3a24")[0]
-					time.sleep(publishDelay)
+					#time.sleep(publishDelay)
 
 				imuPacketList = []
 				for j in range(0, bufferSize):
