@@ -8,12 +8,13 @@ import time
 import argparse
 import os
 import boto3
+import math
 from pygame import mixer
 
-verbose = True
+verbose = False
 speech = True
 iot = False
-csvLog = False
+csvLog = True
 
 # Custom MQTT message callback
 def customCallback(client, userdata, message):
@@ -170,6 +171,11 @@ while trainingLive == True:
 					#data6[i] = req.read_by_uuid("3a24")[0]
 					#time.sleep(publishDelay)
 					#print("data4[i] length: ", len(data4[0]))
+				
+				
+				if (dataPoints % dataPointsPerMovementIteration == 0 or dataPoints == 0) and classIndex > 3:
+					if speech == True:
+						playTextToSpeech(str("<speak>OK!</speak>"))
 
 				imuPacketList = []
 				for j in range(0, bufferSize):
@@ -196,7 +202,8 @@ while trainingLive == True:
 					currentImuPayload.mz = struct.unpack_from('i', data4[j], 8)[0]
 
 					currentImuPayload.steps = struct.unpack_from('i', data4[j], 12)[0]
-					currentImuPayload.temp = struct.unpack_from('i', data4[j], 12)[0]
+					#currentImuPayload.temp = struct.unpack_from('i', data4[j], 12)[0]
+					currentImuPayload.temp = int(math.sqrt((math.sqrt(currentImuPayload.ax2**2))))
 
 					currentImuPayload.classification = classIndex # Current gesture class #TODO: vui change
 
