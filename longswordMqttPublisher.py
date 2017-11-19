@@ -1,5 +1,5 @@
 import csv
-import json
+import json, requests
 import struct
 from gattlib import GATTRequester
 from AWSIoTPythonSDK.MQTTLib import AWSIoTMQTTClient
@@ -242,8 +242,15 @@ while trainingLive == True:
 	trainingLive = False
 
 # TODO: get score from stateful RESTful service
+finalData = json.loads(requests.get(url="http://epidemicsimulator.com:5000/predict").text)
+
+classAccuracy = json.loads(finalData)['classAccuracy']
+techniqueStrings =  ["Vom tag", "Ochs", "Pflug", "Wechsel", "Mittelhaw","Oberhaw","Zwerhaw"]
+
 # Play outro speech
-outroSsmlText = "<speak>Session complete! Your score is: 62%. Now, I can use your data to also become better at grading. Thank you for using longsword training.</speak>"
+outroSsmlText = "<speak>Session complete! Your score is: " + str(int(json.loads(finalData)['accuracyScore'] * 100)) +  "%. " + " Recommendation: Improve <lang xml:lang=\"de-DE\">" + techniqueStrings[classAccuracy.index(min(classAccuracy))]  + "</lang>. Thank you for using longsword training.</speak>"
+if verbose == True:
+	print outroSsmlText
 if speech == True:
 	playTextToSpeech(outroSsmlText)
 
