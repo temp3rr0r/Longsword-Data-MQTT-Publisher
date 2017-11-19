@@ -11,8 +11,9 @@ import boto3
 import math
 from pygame import mixer
 
-verbose = True
+verbose = False
 speech = True
+countDown = False
 iot = True
 csvLog = False
 
@@ -123,7 +124,7 @@ print("Started!")
 # Publish to the same topic in a loop forever
 loopCount = 0
 publishDelay = 0.015 # seconds
-afterSpeechDelay = 0.010 # second
+afterSpeechDelay = 0.100 # second
 dataPointsPerMovement = 4
 dataPointsPerMovementIteration = 4
 
@@ -149,7 +150,7 @@ while trainingLive == True:
 			for dataPoints in range(dataPointsPerMovement): # get  data points
 
 				if (dataPoints % dataPointsPerMovementIteration == 0 or dataPoints == 0) and classIndex > 3:
-					if speech == True:
+					if speech == True and countDown == True:
 
 						playTextToSpeech(str("<speak>Get ready!</speak>"))
 						time.sleep(afterSpeechDelay)
@@ -174,7 +175,7 @@ while trainingLive == True:
 				
 				
 				if (dataPoints % dataPointsPerMovementIteration == 0 or dataPoints == 0) and classIndex > 3:
-					if speech == True:
+					if speech == True and countDown == True:
 						playTextToSpeech(str("<speak>OK!</speak>"))
 
 				imuPacketList = []
