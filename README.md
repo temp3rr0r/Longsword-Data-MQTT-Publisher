@@ -1,5 +1,7 @@
 # LongswordStances
 
+Working demo: https://www.youtube.com/watch?v=v7hvOyPQ0EM
+
  The main IoT app. It runs on Nvidia Jetson TX2(embedded super-computer). Connects with sensors via BLE and publishes all the real-time IMU data to the AWS IoT stream via MQTT. It also interacts with the user via AWS Polly text-to-speech.
 
 ## Technologies
